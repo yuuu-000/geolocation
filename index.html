@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>現在位置取得</title>
+<style>
+  /* ダークモード風 */
+  body {
+    background-color: #2b2b2b; /* 少し暗めの背景 */
+    color: #e0e0e0;
+    font-family: "Helvetica Neue", sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  main {
+    background-color: #3a3a3a; /* 優しいグレーっぽい */
+    padding: 20px;
+    border-radius: 12px;
+    margin: 20px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  h1 {
+    color: #11dd66;
+    font-size: 1.5em;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .info div {
+    padding: 8px;
+    background-color: #2e2e2e;
+    border-radius: 8px;
+    word-break: break-word;
+  }
+
+  a.coord-link {
+    color: #11dd66;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  a.coord-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 480px) {
+    main {
+      margin: 10px;
+      padding: 16px;
+    }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>現在位置情報</h1>
+  <div class="info" id="info">
+    <div>位置情報取得中...</div>
+  </div>
+</main>
+
+<script>
+// タイムスタンプを yyyy-mm-dd ddd hh:mm:ss.fff 形式に変換
+function formatTimestamp(ts) {
+  const date = new Date(ts);
+
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+
+  // 曜日
+  const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+  const ddd = weekdays[date.getDay()];
+
+  const hh = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  const ss = String(date.getSeconds()).padStart(2, '0');
+  const fff = String(date.getMilliseconds()).padStart(3, '0');
+
+  return `${yyyy}-${mm}-${dd} ${ddd} ${hh}:${min}:${ss}.${fff}`;
+}
+
+function showPosition(position) {
+  const info = document.getElementById('info');
+  const lat = position.coords.latitude;
+  const lng = position.coords.longitude;
+  const alt = position.coords.altitude !== null ? position.coords.altitude + ' m' : '不明';
+  const acc = position.coords.accuracy + ' m';
+  const altAcc = position.coords.altitudeAccuracy !== null ? position.coords.altitudeAccuracy + ' m' : '不明';
+  const speed = position.coords.speed !== null ? position.coords.speed + ' m/s' : '不明';
+  const heading = position.coords.heading !== null ? position.coords.heading + '°' : '不明';
+  const timestamp = formatTimestamp(position.timestamp);
+
+  info.innerHTML = `
+    <div>緯度: <a class="coord-link" href="https://www.google.com/maps?q=${lat},${lng}" target="_blank">${lat}</a></div>
+    <div>経度: <a class="coord-link" href="https://www.google.com/maps?q=${lat},${lng}" target="_blank">${lng}</a></div>
+    <div>高度: ${alt}</div>
+    <div>緯度経度精度: ${acc}</div>
+    <div>高度精度: ${altAcc}</div>
+    <div>速度: ${speed}</div>
+    <div>方位: ${heading}</div>
+    <div>タイムスタンプ: ${timestamp}</div>
+  `;
+}
+
+function showError(error) {
+  const info = document.getElementById('info');
+  info.innerHTML = `<div style="color:#ff5555;">位置情報取得エラー: ${error.message}</div>`;
+}
+
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(showPosition, showError, {
+    enableHighAccuracy: true,
+    timeout: 10000,
+    maximumAge: 0
+  });
+} else {
+  document.getElementById('info').innerHTML = '<div style="color:#ff5555;">このブラウザではGeolocation APIに対応していません。</div>';
+}
+</script>
+</body>
+</html>
