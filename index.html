@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>位置取得</title>
+<title>GEOLOCATION</title>
 <style>
   body {
     background-color: #2b2b2b;
@@ -72,59 +72,58 @@ function formatTimestamp(ts) {
   const date = new Date(ts);
 
   const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
 
-  const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+  const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
   const ddd = weekdays[date.getDay()];
 
-  const hh = String(date.getHours()).padStart(2, '0');
-  const min = String(date.getMinutes()).padStart(2, '0');
-  const ss = String(date.getSeconds()).padStart(2, '0');
-  const fff = String(date.getMilliseconds()).padStart(3, '0');
+  const hh = String(date.getHours()).padStart(2, "0");
+  const min = String(date.getMinutes()).padStart(2, "0");
+  const ss = String(date.getSeconds()).padStart(2, "0");
+  const fff = String(date.getMilliseconds()).padStart(3, "0");
 
   return `${yyyy}-${mm}-${dd} ${ddd} ${hh}:${min}:${ss}.${fff}`;
 }
 
 function showPosition(position) {
-  const info = document.getElementById('info');
+  const info = document.getElementById("info");
   const lat = position.coords.latitude;
   const lng = position.coords.longitude;
-  const alt = position.coords.altitude !== null ? position.coords.altitude + ' m' : '不明';
-  const acc = position.coords.accuracy + ' m';
-  const altAcc = position.coords.altitudeAccuracy !== null ? position.coords.altitudeAccuracy + ' m' : '不明';
-  const speed = position.coords.speed !== null ? position.coords.speed + ' m/s' : '不明';
-  const heading = position.coords.heading !== null ? position.coords.heading + '°' : '不明';
+  const alt = position.coords.altitude !== null ? position.coords.altitude + " m" : "不明";
+  const acc = position.coords.accuracy + " m";
+  const altAcc = position.coords.altitudeAccuracy !== null ? position.coords.altitudeAccuracy + " m" : "不明";
+  const speed = position.coords.speed !== null ? position.coords.speed + " m/s" : "不明";
+  const heading = position.coords.heading !== null ? position.coords.heading + "°" : "不明";
 
   const timestamp = formatTimestamp(position.timestamp);
   const unixMs = position.timestamp; // UNIX ミリ秒
 
   info.innerHTML = `
-    <div>緯度: ${lat}</div>
-    <div>経度: ${lng}</div>
+    <div>緯度　　　　: ${lat}</div>
+    <div>経度　　　　: ${lng}</div>
+    <div>高度　　　　: ${alt}</div>
+    <div>緯度経度精度: ${acc}</div>
+    <div>高度精度　　: ${altAcc}</div>
+    <div>速度　　　　: ${speed}</div>
+    <div>方位　　　　: ${heading}</div>
 
-    <!-- Google マップ検索リンク（唯一） -->
+    <div>取得時刻: ${timestamp}</div>
+    <div>UNIX(ms): ${unixMs}</div>
+
     <div>
       <a class="coord-link" 
-         href="https://www.google.com/maps?q=${lat},${lng}" 
+         href="https://www.google.com/maps?q=${lat}, ${lng}" 
          target="_blank">
-        Googleマップ
+        Googleマップで位置を開く
       </a>
     </div>
 
-    <div>高度: ${alt}</div>
-    <div>緯度経度精度: ${acc}</div>
-    <div>高度精度: ${altAcc}</div>
-    <div>速度: ${speed}</div>
-    <div>方位: ${heading}</div>
-
-    <div>タイムスタンプ: ${timestamp}</div>
-    <div>UNIX (ms): ${unixMs}</div>
   `;
 }
 
 function showError(error) {
-  const info = document.getElementById('info');
+  const info = document.getElementById("info");
   info.innerHTML = `<div style="color:#ff5555;">位置情報取得エラー: ${error.message}</div>`;
 }
 
@@ -135,9 +134,10 @@ if (navigator.geolocation) {
     maximumAge: 0
   });
 } else {
-  document.getElementById('info').innerHTML =
-    '<div style="color:#ff5555;">このブラウザではGeolocation APIに対応していません。</div>';
+  document.getElementById("info").innerHTML =
+    "<div style="color:#ff5555;">このブラウザではGeolocation APIに対応していません。</div>";
 }
 </script>
 </body>
 </html>
+
