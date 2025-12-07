@@ -3,11 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>現在位置取得</title>
+<title>位置取得</title>
 <style>
-  /* ダークモード風 */
   body {
-    background-color: #2b2b2b; /* 少し暗めの背景 */
+    background-color: #2b2b2b;
     color: #e0e0e0;
     font-family: "Helvetica Neue", sans-serif;
     margin: 0;
@@ -19,7 +18,7 @@
   }
 
   main {
-    background-color: #3a3a3a; /* 優しいグレーっぽい */
+    background-color: #3a3a3a;
     padding: 20px;
     border-radius: 12px;
     margin: 20px;
@@ -57,13 +56,6 @@
   a.coord-link:hover {
     text-decoration: underline;
   }
-
-  @media (max-width: 480px) {
-    main {
-      margin: 10px;
-      padding: 16px;
-    }
-  }
 </style>
 </head>
 <body>
@@ -75,7 +67,7 @@
 </main>
 
 <script>
-// タイムスタンプを yyyy-mm-dd ddd hh:mm:ss.fff 形式に変換
+// yyyy-mm-dd ddd hh:mm:ss.fff 形式に変換
 function formatTimestamp(ts) {
   const date = new Date(ts);
 
@@ -83,7 +75,6 @@ function formatTimestamp(ts) {
   const mm = String(date.getMonth() + 1).padStart(2, '0');
   const dd = String(date.getDate()).padStart(2, '0');
 
-  // 曜日
   const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
   const ddd = weekdays[date.getDay()];
 
@@ -104,17 +95,31 @@ function showPosition(position) {
   const altAcc = position.coords.altitudeAccuracy !== null ? position.coords.altitudeAccuracy + ' m' : '不明';
   const speed = position.coords.speed !== null ? position.coords.speed + ' m/s' : '不明';
   const heading = position.coords.heading !== null ? position.coords.heading + '°' : '不明';
+
   const timestamp = formatTimestamp(position.timestamp);
+  const unixMs = position.timestamp; // UNIX ミリ秒
 
   info.innerHTML = `
-    <div>緯度: <a class="coord-link" href="https://www.google.com/maps?q=${lat},${lng}" target="_blank">${lat}</a></div>
-    <div>経度: <a class="coord-link" href="https://www.google.com/maps?q=${lat},${lng}" target="_blank">${lng}</a></div>
+    <div>緯度: ${lat}</div>
+    <div>経度: ${lng}</div>
+
+    <!-- Google マップ検索リンク（唯一） -->
+    <div>
+      <a class="coord-link" 
+         href="https://www.google.com/maps?q=${lat},${lng}" 
+         target="_blank">
+        Googleマップ
+      </a>
+    </div>
+
     <div>高度: ${alt}</div>
     <div>緯度経度精度: ${acc}</div>
     <div>高度精度: ${altAcc}</div>
     <div>速度: ${speed}</div>
     <div>方位: ${heading}</div>
+
     <div>タイムスタンプ: ${timestamp}</div>
+    <div>UNIX (ms): ${unixMs}</div>
   `;
 }
 
@@ -130,7 +135,8 @@ if (navigator.geolocation) {
     maximumAge: 0
   });
 } else {
-  document.getElementById('info').innerHTML = '<div style="color:#ff5555;">このブラウザではGeolocation APIに対応していません。</div>';
+  document.getElementById('info').innerHTML =
+    '<div style="color:#ff5555;">このブラウザではGeolocation APIに対応していません。</div>';
 }
 </script>
 </body>
